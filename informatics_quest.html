@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IT Квест — Тест по информатике</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0e18;
+      --surface: #16162a;
+      --surface2: #1e1e36;
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(255,255,255,0.16);
+      --text: #f0f0f8;
+      --text-muted: #8888aa;
+      --accent: #7b5cf5;
+      --accent-light: #a98eff;
+      --accent-glow: rgba(123,92,245,0.3);
+      --success: #4ade80;
+      --success-bg: rgba(74,222,128,0.1);
+      --success-border: rgba(74,222,128,0.3);
+      --danger: #f87171;
+      --danger-bg: rgba(248,113,113,0.1);
+      --danger-border: rgba(248,113,113,0.3);
+      --warning: #fbbf24;
+      --warning-bg: rgba(251,191,36,0.1);
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    @keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeOut { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(-16px); } }
+    @keyframes shake { 0%,100% { transform:translateX(0); } 20%,60% { transform:translateX(-8px); } 40%,80% { transform:translateX(8px); } }
+    @keyframes pop { 0% { transform:scale(0) rotate(-20deg); opacity:0; } 70% { transform:scale(1.2) rotate(5deg); } 100% { transform:scale(1) rotate(0); opacity:1; } }
+    @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
+    @keyframes pulse-glow { 0%,100% { box-shadow:0 0 0 0 transparent; } 50% { box-shadow:0 0 20px 4px var(--accent-glow); } }
+    @keyframes starSpin { from { transform:rotate(0deg) scale(1); } to { transform:rotate(360deg) scale(1.2); } }
+    @keyframes ripple { 0% { transform:scale(0); opacity:0.6; } 100% { transform:scale(4); opacity:0; } }
+    @keyframes progressFill { from { width:0; } to { width:var(--target); } }
+    @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes confetti-fall {
+      0%   { transform: translateY(-10px) rotate(0deg); opacity:1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity:0; }
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 60px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background blobs */
+    .bg-blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-blob-1 { width:400px; height:400px; background:rgba(123,92,245,0.12); top:-100px; left:-100px; }
+    .bg-blob-2 { width:350px; height:350px; background:rgba(56,189,248,0.07); bottom:0; right:-80px; }
+    .bg-blob-3 { width:200px; height:200px; background:rgba(251,191,36,0.06); top:40%; left:50%; }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 640px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .site-header {
+      text-align: center;
+      margin-bottom: 32px;
+      animation: slideUp 0.6s ease both;
+    }
+    .site-header .badge {
+      display: inline-block;
+      background: var(--accent-glow);
+      border: 1px solid rgba(123,92,245,0.4);
+      color: var(--accent-light);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 99px;
+      margin-bottom: 14px;
+    }
+    .site-header h1 {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .site-header p {
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Progress header card */
+    .progress-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      animation: slideUp 0.6s 0.1s ease both;
+    }
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .progress-score {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .stars-row { display: flex; gap: 6px; }
+    .star {
+      font-size: 18px;
+      opacity: 0.2;
+      transition: all 0.3s;
+    }
+    .star.lit {
+      opacity: 1;
+      animation: pop 0.5s cubic-bezier(.17,.67,.4,1.5) both;
+    }
+    .progress-track {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%);
+      border-radius: 99px;
+      transition: width 0.7s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* Question card */
+    .question-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      animation: fadeIn 0.4s ease both;
+    }
+
+    .q-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .q-icon {
+      font-size: 38px;
+      flex-shrink: 0;
+      animation: float 3s ease infinite;
+      line-height: 1;
+    }
+    .q-meta { flex: 1; }
+    .q-level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-bottom: 6px;
+    }
+    .q-number {
+      font-family: var(--font-display);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .q-body { padding: 20px 24px; }
+    .q-text {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    .q-blank {
+      display: inline-block;
+      min-width: 110px;
+      border-bottom: 2px dashed rgba(123,92,245,0.5);
+      margin: 0 4px;
+      vertical-align: bottom;
+      color: var(--accent-light);
+      font-style: italic;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+    .ans-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 15px;
+      font-family: var(--font-body);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .ans-input::placeholder { color: var(--text-muted); }
+    .ans-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .ans-input.correct {
+      border-color: var(--success);
+      box-shadow: 0 0 0 3px rgba(74,222,128,0.15);
+      background: rgba(74,222,128,0.05);
+    }
+    .ans-input.wrong {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(248,113,113,0.15);
+      animation: shake 0.4s ease;
+    }
+
+    .check-btn {
+      padding: 12px 22px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 500;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+    }
+    .check-btn:hover {
+      background: #6d4fe0;
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+    .check-btn:active { transform: scale(0.97); }
+    .check-btn:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
+
+    .feedback {
+      margin-top: 14px;
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .feedback.show { display: flex; align-items: center; gap: 8px; }
+    .feedback.success { background: var(--success-bg); border: 1px solid var(--success-border); color: var(--success); }
+    .feedback.error   { background: var(--danger-bg);  border: 1px solid var(--danger-border);  color: var(--danger); }
+    .feedback.warning { background: var(--warning-bg); border: 1px solid rgba(251,191,36,0.3); color: var(--warning); }
+
+    .q-footer {
+      padding: 14px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .lives { display: flex; gap: 5px; align-items: center; }
+    .life { font-size: 16px; transition: all 0.2s; }
+    .life.lost { opacity: 0.18; filter: grayscale(1); }
+    .hint-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-size: 13px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.2s;
+    }
+    .hint-btn:hover { border-color: var(--warning); color: var(--warning); }
+
+    /* Nav */
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      animation: slideUp 0.4s 0.1s ease both;
+    }
+    .nav-btn {
+      padding: 11px 22px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-btn.ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .nav-btn.ghost:hover { border-color: var(--border-hover); color: var(--text); }
+    .nav-btn.solid {
+      background: var(--accent);
+      border: 1px solid transparent;
+      color: #fff;
+    }
+    .nav-btn.solid:hover { background: #6d4fe0; box-shadow: 0 4px 20px var(--accent-glow); }
+    .nav-btn:disabled { opacity: 0.35; cursor: default; }
+
+    /* Result screen */
+    .result-screen {
+      display: none;
+      animation: slideUp 0.6s ease both;
+    }
+    .result-screen.show { display: block; }
+
+    .trophy-wrap {
+      text-align: center;
+      padding: 40px 24px 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+    }
+    .trophy-emoji {
+      font-size: 72px;
+      display: block;
+      margin-bottom: 16px;
+      animation: float 2s ease infinite;
+    }
+    .result-title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #fff, var(--accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .result-sub { color: var(--text-muted); font-size: 15px; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .stat-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .stat-val {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-val.green { color: var(--success); }
+    .stat-val.red   { color: var(--danger); }
+    .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .answers-section { margin-top: 20px; }
+    .answers-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .ans-review {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .ans-review .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .status-dot.ok { background: var(--success); }
+    .status-dot.fail { background: var(--danger); }
+    .ans-q { font-size: 13px; color: var(--text-muted); margin-bottom: 3px; }
+    .ans-a { font-size: 14px; font-weight: 500; color: var(--success); }
+    .ans-wrong { font-size: 12px; color: var(--danger); margin-top: 2px; }
+
+    .restart-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: var(--font-body);
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .restart-btn:hover { background: #6d4fe0; box-shadow: 0 6px 24px var(--accent-glow); }
+
+    /* Confetti */
+    .confetti-piece {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      top: -10px;
+      border-radius: 2px;
+      animation: confetti-fall linear forwards;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      body { padding: 16px 12px 60px; }
+      .q-body { padding: 16px; }
+      .q-header { padding: 16px; }
+      .q-footer { padding: 12px 16px; }
+      .input-row { flex-direction: column; }
+      .check-btn { width: 100%; }
+      .nav-row { gap: 8px; }
+      .site-header h1 { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+  <div class="bg-blob bg-blob-3"></div>
+
+  <div class="container">
+    <header class="site-header">
+      <div class="badge">🚀 Информатика — Квест</div>
+      <h1>IT Приключение</h1>
+      <p>Заполни пропуски правильными ответами<br>и стань мастером информатики!</p>
+    </header>
+
+    <div class="progress-card">
+      <div class="progress-top">
+        <span class="progress-score" id="prog-label">Прогресс: 0 / 5</span>
+        <div class="stars-row">
+          <span class="star" id="s0">⭐</span>
+          <span class="star" id="s1">⭐</span>
+          <span class="star" id="s2">⭐</span>
+          <span class="star" id="s3">⭐</span>
+          <span class="star" id="s4">⭐</span>
+        </div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div id="quiz-area"></div>
+
+    <div class="result-screen" id="result-screen"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        num: 6,
+        icon: "🏠",
+        levelLabel: "Уровень 1 — Умный дом",
+        levelBg: "rgba(30,180,120,0.15)",
+        levelColor: "#4ade80",
+        levelBorder: "rgba(74,222,128,0.3)",
+        text: 'Концепция вычислительной сети физических предметов, оснащённых датчиками для взаимодействия друг с другом (например, контроллеры и лампы в системе умного дома), называется',
+        answers: ["интернет вещей","iot","internet of things","интернет-вещей"],
+        display: "Интернет вещей / IoT",
+        hint: "💡 Подсказка: аббревиатура — IoT (Internet of Things)"
+      },
+      {
+        num: 7,
+        icon: "💰",
+        levelLabel: "Уровень 2 — Стартап",
+        levelBg: "rgba(251,191,36,0.12)",
+        levelColor: "#fbbf24",
+        levelBorder: "rgba(251,191,36,0.3)",
+        text: 'Для привлечения первичного финансирования ИТ-стартапа от большого количества обычных людей используется платформа',
+        answers: ["краудфандинга","краудфандинг","crowdfunding"],
+        display: "Краудфандинга / Crowdfunding",
+        hint: "💡 Подсказка: от английских слов «толпа» (crowd) и «финансирование» (funding)"
+      },
+      {
+        num: 8,
+        icon: "🌐",
+        levelLabel: "Уровень 3 — Сеть",
+        levelBg: "rgba(56,189,248,0.12)",
+        levelColor: "#38bdf8",
+        levelBorder: "rgba(56,189,248,0.3)",
+        text: 'Уникальный числовой идентификатор, который получает каждое устройство при подключении к компьютерной сети, называется',
+        answers: ["ip-адрес","ip адрес","ip address","ип адрес","ип-адрес"],
+        display: "IP-адрес",
+        hint: "💡 Подсказка: две буквы + слово «адрес»"
+      },
+      {
+        num: 9,
+        icon: "☁️",
+        levelLabel: "Уровень 4 — Облако",
+        levelBg: "rgba(123,92,245,0.15)",
+        levelColor: "#a98eff",
+        levelBorder: "rgba(169,142,255,0.3)",
+        text: 'Вычислительные мощности, серверы и хранилища данных, предоставляемые пользователю через интернет как удалённый сервис, относятся к ____________ технологиям.',
+        answers: ["облачным","облачные","облачной","cloud","клауд"],
+        display: "Облачным",
+        hint: "💡 Подсказка: метафора из метеорологии ☁️"
+      },
+      {
+        num: 10,
+        icon: "⚙️",
+        levelLabel: "Уровень 5 — Код",
+        levelBg: "rgba(248,113,113,0.12)",
+        levelColor: "#f87171",
+        levelBorder: "rgba(248,113,113,0.3)",
+        text: 'Именованный блок кода (набор инструкций), который выполняет определённую задачу и который можно вызывать в программе многократно, называется',
+        answers: ["функцией","процедурой","функция","процедура","function","procedure"],
+        display: "Функцией / Процедурой",
+        hint: "💡 Подсказка: математический термин — или слово «распорядок» по-латыни"
+      }
+    ];
+
+    let current = 0;
+    let correctCount = 0;
+    let attempts = [3,3,3,3,3];
+    let userAnswers = Array(5).fill(null);
+    let answered = Array(5).fill(false);
+    let hintShown = Array(5).fill(false);
+
+    function renderQuestion() {
+      const q = questions[current];
+      const area = document.getElementById('quiz-area');
+
+      const livesHTML = Array.from({length:3}, (_,i) =>
+        `<span class="life${attempts[current] <= i ? ' lost' : ''}" id="lf${i}">❤️</span>`
+      ).join('');
+
+      area.innerHTML = `
+        <div class="question-card" id="qcard">
+          <div class="q-header">
+            <div class="q-icon">${q.icon}</div>
+            <div class="q-meta">
+              <span class="q-level-badge" style="background:${q.levelBg};color:${q.levelColor};border:1px solid ${q.levelBorder}">
+                ${q.levelLabel}
+              </span>
+              <div class="q-number">Вопрос ${current+1} из ${questions.length}</div>
+            </div>
+          </div>
+          <div class="q-body">
+            <div class="q-text">${q.text} <span class="q-blank" id="blank-display">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</div>
+            <div class="input-row">
+              <input class="ans-input" id="ans-input" type="text"
+                placeholder="Введи ответ..."
+                autocomplete="off"
+                ${answered[current] ? 'disabled' : ''}
+                value="${userAnswers[current] || ''}" />
+              <button class="check-btn" id="check-btn" ${answered[current] ? 'disabled' : ''}>Проверить ✓</button>
+            </div>
+            <div class="feedback" id="feedback"></div>
+          </div>
+          <div class="q-footer">
+            <div class="lives">${livesHTML}</div>
+            ${!answered[current] && !hintShown[current]
+              ? `<button class="hint-btn" id="hint-btn">💡 Подсказка</button>`
+              : hintShown[current] && !answered[current]
+              ? `<span style="font-size:13px;color:var(--warning);max-width:240px;line-height:1.4">${q.hint}</span>`
+              : `<span></span>`
+            }
+          </div>
+        </div>
+        <div class="nav-row">
+          <button class="nav-btn ghost" id="prev-btn" ${current===0?'disabled':''}>← Назад</button>
+          <button class="nav-btn solid" id="next-btn" ${!answered[current]?'disabled':''}>
+            ${current===questions.length-1 ? '🏆 Результат' : 'Далее →'}
+          </button>
+        </div>
+      `;
+
+      if (answered[current]) restoreAnsweredState();
+
+      document.getElementById('check-btn').addEventListener('click', checkAnswer);
+      document.getElementById('ans-input').addEventListener('keydown', e => { if(e.key==='Enter') checkAnswer(); });
+      document.getElementById('prev-btn').addEventListener('click', () => { if(current>0){ current--; renderQuestion(); } });
+      document.getElementById('next-btn').addEventListener('click', () => {
+        if(current < questions.length-1){ current++; renderQuestion(); }
+        else showResult();
+      });
+      const hintBtn = document.getElementById('hint-btn');
+      if(hintBtn) hintBtn.addEventListener('click', () => { hintShown[current]=true; renderQuestion(); });
+
+      if (!answered[current]) {
+        setTimeout(() => {
+          const inp = document.getElementById('ans-input');
+          if(inp) inp.focus();
+        }, 100);
+      }
+    }
+
+    function checkAnswer() {
+      if(answered[current]) return;
+      const input = document.getElementById('ans-input');
+      const val = input.value.trim().toLowerCase();
+      if(!val) { shakeFeedback(); return; }
+
+      const q = questions[current];
+      const isCorrect = q.answers.includes(val);
+      userAnswers[current] = input.value.trim();
+
+      if(isCorrect) {
+        answered[current] = true;
+        correctCount++;
+        input.classList.remove('wrong');
+        input.classList.add('correct');
+        input.disabled = true;
+        document.getElementById('check-btn').disabled = true;
+        showFeedback('success', '✅ Верно! Отличная работа!');
+        lightStar(current);
+        document.getElementById('next-btn').disabled = false;
+        document.getElementById('blank-display').textContent = q.display;
+        document.getElementById('blank-display').style.color = 'var(--success)';
+        document.getElementById('blank-display').style.borderBottomColor = 'var(--success)';
+        const hintDiv = document.querySelector('.hint-btn');
+        if(hintDiv) hintDiv.style.display = 'none';
+        // confetti for perfect
+        if(correctCount === 5) setTimeout(launchConfetti, 200);
+      } else {
+        attempts[current]--;
+        input.classList.remove('correct');
+        input.classList.add('wrong');
+        setTimeout(() => input.classList.remove('wrong'), 450);
+        updateLives();
+
+        if(attempts[current] <= 0) {
+          answered[current] = true;
+          input.disabled = true;
+          document.getElementById('check-btn').disabled = true;
+          showFeedback('error', `❌ Попытки исчерпаны. Ответ: ${q.display}`);
+          document.getElementById('next-btn').disabled = false;
+          document.getElementById('blank-display').textContent = q.display;
+          document.getElementById('blank-display').style.color = 'var(--danger)';
+        } else {
+          showFeedback('error', `❌ Неверно! Осталось попыток: ${attempts[current]}`);
+        }
+      }
+    }
+
+    function restoreAnsweredState() {
+      const q = questions[current];
+      const input = document.getElementById('ans-input');
+      const isCorrect = q.answers.includes((userAnswers[current]||'').toLowerCase().trim());
+      input.disabled = true;
+      if(isCorrect) {
+        input.classList.add('correct');
+        showFeedback('success', '✅ Верно! Отличная работа!');
+        document.getElementById('blank-display').textContent = q.display;
+        document.getElementById('blank-display').style.color = 'var(--success)';
+      } else {
+        showFeedback('error', `❌ Правильный ответ: ${q.display}`);
+        document.getElementById('blank-display').textContent = q.display;
+        document.getElementById('blank-display').style.color = 'var(--danger)';
+      }
+    }
+
+    function showFeedback(type, msg) {
+      const el = document.getElementById('feedback');
+      el.className = 'feedback show ' + type;
+      el.innerHTML = msg;
+    }
+
+    function shakeFeedback() {
+      const card = document.getElementById('ans-input');
+      card.classList.add('wrong');
+      setTimeout(() => card.classList.remove('wrong'), 400);
+    }
+
+    function lightStar(idx) {
+      const s = document.getElementById('s'+idx);
+      if(s) s.classList.add('lit');
+      const pct = Math.round((correctCount / questions.length) * 100);
+      document.getElementById('prog-fill').style.width = pct + '%';
+      document.getElementById('prog-label').textContent = `Прогресс: ${correctCount} / ${questions.length}`;
+    }
+
+    function updateLives() {
+      for(let i=0;i<3;i++){
+        const el = document.getElementById('lf'+i);
+        if(el) el.className = 'life' + (attempts[current] <= i ? ' lost' : '');
+      }
+    }
+
+    function showResult() {
+      document.getElementById('quiz-area').style.display = 'none';
+      const rs = document.getElementById('result-screen');
+      rs.classList.add('show');
+
+      let trophy='📚', titleTxt='Повтори материал!', subTxt='Не сдавайся — попробуй ещё раз.';
+      if(correctCount===5)      { trophy='🏆'; titleTxt='Идеальный результат!'; subTxt='Ты настоящий мастер информатики!'; launchConfetti(); }
+      else if(correctCount>=4)  { trophy='🥇'; titleTxt='Почти идеально!'; subTxt='Совсем чуть-чуть до абсолюта.'; }
+      else if(correctCount>=3)  { trophy='🥈'; titleTxt='Хороший результат!'; subTxt='Знания есть, осталось закрепить.'; }
+      else if(correctCount>=2)  { trophy='🥉'; titleTxt='Неплохое начало!'; subTxt='Есть куда расти — вперёд!'; }
+
+      const caItems = questions.map((q,i) => {
+        const ok = q.answers.includes((userAnswers[i]||'').toLowerCase().trim());
+        return `<div class="ans-review">
+          <div class="status-dot ${ok?'ok':'fail'}"></div>
+          <div>
+            <div class="ans-q">Вопрос ${q.num}: ${q.text.substring(0,70)}...</div>
+            <div class="ans-a">✅ Правильно: ${q.display}</div>
+            ${!ok && userAnswers[i] ? `<div class="ans-wrong">Твой ответ: ${userAnswers[i]}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+
+      rs.innerHTML = `
+        <div class="trophy-wrap">
+          <span class="trophy-emoji">${trophy}</span>
+          <div class="result-title">${titleTxt}</div>
+          <div class="result-sub">${subTxt}</div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-val green">${correctCount}</div>
+              <div class="stat-label">Правильных</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val red">${questions.length-correctCount}</div>
+              <div class="stat-label">Ошибок</div>
+            </div>
+          </div>
+        </div>
+        <div class="answers-section">
+          <div class="answers-title">Разбор ответов</div>
+          ${caItems}
+        </div>
+        <button class="restart-btn" id="restart-btn">🔄 Пройти ещё раз</button>
+      `;
+      document.getElementById('restart-btn').addEventListener('click', restart);
+
+      for(let i=0;i<5;i++){
+        if(questions[i].answers.includes((userAnswers[i]||'').toLowerCase().trim())){
+          const s=document.getElementById('s'+i);
+          if(s) s.classList.add('lit');
+        }
+      }
+    }
+
+    function restart() {
+      current=0; correctCount=0;
+      attempts=[3,3,3,3,3];
+      userAnswers=Array(5).fill(null);
+      answered=Array(5).fill(false);
+      hintShown=Array(5).fill(false);
+      for(let i=0;i<5;i++){
+        const s=document.getElementById('s'+i);
+        if(s) s.classList.remove('lit');
+      }
+      document.getElementById('prog-fill').style.width='0%';
+      document.getElementById('prog-label').textContent='Прогресс: 0 / 5';
+      const rs = document.getElementById('result-screen');
+      rs.classList.remove('show');
+      rs.innerHTML = '';
+      const qa = document.getElementById('quiz-area');
+      qa.style.display='block';
+      renderQuestion();
+    }
+
+    function launchConfetti() {
+      const colors = ['#7b5cf5','#a98eff','#4ade80','#fbbf24','#f87171','#38bdf8','#ffffff'];
+      for(let i=0; i<80; i++){
+        setTimeout(() => {
+          const el = document.createElement('div');
+          el.className = 'confetti-piece';
+          el.style.left = Math.random()*100 + 'vw';
+          el.style.background = colors[Math.floor(Math.random()*colors.length)];
+          el.style.width = (Math.random()*8+4)+'px';
+          el.style.height = (Math.random()*8+4)+'px';
+          el.style.borderRadius = Math.random()>0.5 ? '50%' : '2px';
+          el.style.animationDuration = (Math.random()*2+1.5)+'s';
+          el.style.animationDelay = (Math.random()*0.5)+'s';
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 4000);
+        }, i*30);
+      }
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
